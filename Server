@@ -1,0 +1,88 @@
+/**
+ * 
+ */
+package Servidor;
+
+/**
+ * @author carla
+ *
+ */
+import java.net.Socket;
+//import java.net.SocketTimeoutException;
+//import java.sql.Date;
+//import java.text.SimpleDateFormat;
+
+import javax.swing.JOptionPane;
+
+//import java.io.BufferedInputStream;
+//import java.io.BufferedOutputStream;
+//import java.io.BufferedReader;
+//import java.io.DataInputStream;
+//import java.io.DataOutputStream;
+//import java.io.File;
+//import java.io.FileInputStream;
+import java.io.FileWriter;
+import java.io.IOException;
+//import java.io.InputStream;
+//import java.io.InputStreamReader;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+//import java.io.OutputStream;
+import java.io.PrintWriter;
+import java.net.ServerSocket;
+
+
+public class ClasseServidor {
+	
+
+	
+	private ServerSocket socket;
+	private static final int porta = 4444;
+    String captura;
+	
+
+	private Socket conectaSocket() throws IOException {
+		Socket s = socket.accept();
+		return s;
+	}
+	private void montaSocket(int p) throws IOException {
+		socket = new ServerSocket(p);
+	}
+	private void acaoDoServidor(Socket s) {
+
+		try {
+			ObjectOutputStream saida = new ObjectOutputStream(s.getOutputStream());
+			ObjectInputStream entrada = new ObjectInputStream(s.getInputStream());
+			String mensagem = entrada.readUTF();
+			System.out.println(mensagem);
+			PrintWriter arquivo;
+			FileWriter escreve;
+			escreve = new FileWriter(".txt");
+			arquivo = new PrintWriter(escreve);
+			arquivo.print(mensagem);
+			arquivo.close();
+			saida.writeUTF(mensagem.toUpperCase());
+			saida.flush();
+		} catch (Exception e) {
+
+		}
+	}
+public static void main(String[] args) {
+		
+		JOptionPane.showMessageDialog(null,"Esperando!","Servidor", JOptionPane.INFORMATION_MESSAGE);
+		
+		try {
+
+			ClasseServidor servidor  = new ClasseServidor();
+			servidor.montaSocket(porta);
+			
+			while (true) {
+				Socket s = servidor.conectaSocket();
+				servidor.acaoDoServidor(s);
+			}
+
+		} catch (Exception e) {
+			
+		}
+	}
+}
